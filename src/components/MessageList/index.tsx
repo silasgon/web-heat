@@ -1,39 +1,46 @@
+import { api } from '../../services/api';
 import styles from './styles.module.scss';
 
 import logoImg from '../../assets/logo.svg'
+import { useEffect, useState } from 'react';
+
+type Message = {
+    id: string;
+    text: string;
+    user: {
+        name: string;
+        avatar_url: string;
+    }
+}
 
 export function MessageList(){
+    
+    const [messages, setMessages] = useState<Message[]>([])
+
+    //Para chamar a rota de uma API
+    useEffect(() =>{
+        api.get<Message[]>('messages/last3').then((response) =>{
+            setMessages(response.data);
+        })
+    },[]);
     return(
         <div className={styles.messageListWrapper}>
             <img src={logoImg} alt="DoWhile 2021" />
             <ul className={styles.messageList}>
-                <li className={styles.message}>
-                    <p className={styles.messageContent}>Não vejo a hora de começar esse evento, com certeza vai ser o melhor de todos os tempos, vamoo pra cima! </p>
-                    <div className={styles.messageUser}>
-                        <div className={styles.userImg}>
-                            <img src="http://github.com/silasgon.png" alt="Silas Gon" />
+                {messages.map(message => {
+                    return (
+                        <li key={message.id} className={styles.message}>
+                        <p className={styles.messageContent}>{message.text}</p>
+                        <div className={styles.messageUser}>
+                            <div className={styles.userImg}>
+                                <img src={message.user.avatar_url} alt={message.user.name} />
+                            </div>
+                            <span>{message.user.name}</span>
                         </div>
-                        <span>Silas Gon</span>
-                    </div>
-                </li>
-                <li className={styles.message}>
-                    <p className={styles.messageContent}>Não vejo a hora de começar esse evento, com certeza vai ser o melhor de todos os tempos, vamoo pra cima! </p>
-                    <div className={styles.messageUser}>
-                        <div className={styles.userImg}>
-                            <img src="http://github.com/silasgon.png" alt="Silas Gon" />
-                        </div>
-                        <span>Silas Gon</span>
-                    </div>
-                </li>
-                <li className={styles.message}>
-                    <p className={styles.messageContent}>Não vejo a hora de começar esse evento, com certeza vai ser o melhor de todos os tempos, vamoo pra cima! </p>
-                    <div className={styles.messageUser}>
-                        <div className={styles.userImg}>
-                            <img src="http://github.com/silasgon.png" alt="Silas Gon" />
-                        </div>
-                        <span>Silas Gon</span>
-                    </div>
-                </li>
+                    </li>
+                    );
+                })}
+
             </ul>
         </div>
     )
